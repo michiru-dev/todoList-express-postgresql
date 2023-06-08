@@ -37,21 +37,24 @@ function App() {
   }
 
   useEffect(() => {
-    const gettest = async () => {
+    console.log('sdf')
+    const fetchList = async () => {
       await axios
         .get('/')
-        .then((res) => console.log(res))
+        .then((res) => setTodoList(res.data))
         .catch((err) => {
           console.log(err)
         })
     }
-    gettest()
+    fetchList()
   }, [])
 
   const handleButtonClick = async (todoInput: string) => {
+    //asyncで非同期処理を宣言
     //このheadersはリクエストボディの言語、長さ、コンテンツ形式等を指定するもの
     //axios.tsのconfigファイルに記載することも可能
     //postの第三引数にいれる
+    //↓リクエストヘッダー
     // const config = {
     //   headers: {
     //     'Content-Type': 'application/json',
@@ -59,10 +62,12 @@ function App() {
     // }
     //objectならaxiosが勝手にcontent-typeをapplication/jsonにしてくれるから上のconfigは今回はいらない
     const obj = { item: todoInput, id: uuidv4(), createdAt: new Date() }
-    await axios.post('/todos', { todoInput: obj })
-    setTodoList((prevList) => [...prevList, obj])
+    const res = await axios.post('/todos', { todoInput: obj })
+    console.log(res.data)
+    setTodoList(res.data)
     setTodoInput('')
-    console.log(todoList) //そのときに追加した値が入ってないなぜ？？
+    //そのときに追加した値が入ってないなぜ？？
+    console.log(todoList)
   }
 
   return (

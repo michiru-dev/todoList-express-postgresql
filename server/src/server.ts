@@ -10,16 +10,23 @@ const corsOptions = {
   contentType: 'Content-Type',
 }
 
-//明日ここ調べる
+//req:リクエストがきた！相手から来たもの
+//res:レスポンスを返す！こっちから返すもの
+
+//ミドルウェア
+//レスポンスヘッダーの中でクライアント側の要求を許可する
 app.use(function (req, res, next) {
+  //リクエスト元のオリジンを許可
   res.header('Access-Control-Allow-Origin', corsOptions.origin)
+  //メソッドを許可。postとかdeleteとか
   res.header('Access-Control-Allow-Methods', corsOptions.methods)
+  //リクエストヘッダーを許可。ここではcontent-type
   res.header('Access-Control-Allow-Headers', corsOptions.contentType)
   next()
 })
 
 app.get('/', (req, res) => {
-  res.status(200).send('get')
+  res.status(200).send(todoList)
 })
 
 //フォームからデータを受け取って実行できる形式に変換
@@ -27,10 +34,13 @@ app.get('/', (req, res) => {
 app.use(express.json())
 // app.use(express.urlencoded({ extended: true }))
 
+const todoList: any = []
+
 app.post('/todos', (req, res) => {
   const { todoInput } = req.body //bodyの中にデータが入ってる
-  console.log(todoInput)
-  res.status(201).send('post') //これはクライアント側への返事
+  todoList.push(todoInput)
+  console.log(todoList)
+  res.status(201).send(todoList) //これはクライアント側への返事
 })
 
 app.listen(port, () => console.log('server running'))
