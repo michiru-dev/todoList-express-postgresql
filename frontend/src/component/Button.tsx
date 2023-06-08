@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react'
 
-type ButtonBase = { text: string; onClick: any };
+type ButtonBase = { text: string; onClick: any }
 
 function Button({ text, onClick }: ButtonBase) {
-  return <button onClick={onClick}>{text}</button>;
+  return <button onClick={onClick}>{text}</button>
 }
 
-export default Button;
+export default Button
