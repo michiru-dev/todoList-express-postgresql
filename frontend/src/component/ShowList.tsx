@@ -1,13 +1,23 @@
 import React from 'react'
 import Button from './Button'
+import { todoListBase } from '../App'
 
-function ShowList({ list }: { list: any }) {
+function ShowList({
+  list,
+  handleDeleteButtonClick,
+}: {
+  list: todoListBase[]
+  handleDeleteButtonClick: (arg: string) => void //eがない時はこれでok?
+}) {
   return (
     <div>
-      {list.map((item: any) => (
+      {list.map((item: todoListBase) => (
         <li key={item.id}>
           {item.item}
-          <Button text={'削除'} onClick={() => console.log('deleted')} />
+          <Button
+            text={'削除'}
+            onClick={() => handleDeleteButtonClick(item.id)}
+          />
           <Button text={'編集'} onClick={() => console.log('edited')} />
         </li>
       ))}

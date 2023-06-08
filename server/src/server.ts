@@ -34,13 +34,24 @@ app.get('/', (req, res) => {
 app.use(express.json())
 // app.use(express.urlencoded({ extended: true }))
 
-const todoList: any = []
+type todoListBase = { item: string; id: string; createdAt: Date }
 
+let todoList: todoListBase[] = []
+
+//追加
 app.post('/todos', (req, res) => {
   const { todoInput } = req.body //bodyの中にデータが入ってる
   todoList.push(todoInput)
-  console.log(todoList)
   res.status(201).send(todoList) //これはクライアント側への返事
+})
+
+//削除
+app.delete('/todos/delete', (req, res) => {
+  const { id } = req.body
+  // todoListから該当のアイテムを削除する処理
+  const updatedList = todoList.filter((item: todoListBase) => item.id !== id)
+  todoList = updatedList
+  res.status(202).send(todoList)
 })
 
 app.listen(port, () => console.log('server running'))

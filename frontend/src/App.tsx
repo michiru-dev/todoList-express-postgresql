@@ -28,16 +28,17 @@ import { v4 as uuidv4 } from 'uuid'
 //   return <button onClick={handleClick}>{text}</button>;
 // };
 
+export type todoListBase = { item: string; id: string; createdAt: Date }
+
 function App() {
   const [todoInput, setTodoInput] = useState('')
-  const [todoList, setTodoList] = useState<any[]>([])
+  const [todoList, setTodoList] = useState<todoListBase[]>([])
 
-  const handleOnChange = (e: any) => {
+  const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTodoInput(e.target.value)
   }
 
   useEffect(() => {
-    console.log('sdf')
     const fetchList = async () => {
       await axios
         .get('/')
@@ -66,8 +67,12 @@ function App() {
     console.log(res.data)
     setTodoList(res.data)
     setTodoInput('')
-    //そのときに追加した値が入ってないなぜ？？
-    console.log(todoList)
+  }
+
+  const handleDeleteButtonClick = async (id: string) => {
+    const res = await axios.delete('/todos/delete', { data: { id: id } }) //この時の第二引数のプロパティ名は必ずdata
+    //プロパティ名の後はオブジェクトで渡す。これの場合{id}だけでもうまくいく。多分勝手にidをプロパティ名にして処理してくれてる
+    setTodoList(res.data)
   }
 
   return (
@@ -79,7 +84,10 @@ function App() {
       />
       {/* この場に引数がない時(ex;イベントとかコンポーネント側で渡したい時とか)は最初の引数も入れる */}
       <Button text={'追加'} onClick={() => handleButtonClick(todoInput)} />
-      <ShowList list={todoList} />
+      <ShowList
+        list={todoList}
+        handleDeleteButtonClick={handleDeleteButtonClick}
+      />
     </div>
   )
 }
