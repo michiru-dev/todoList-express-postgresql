@@ -1,9 +1,12 @@
-import React from "react";
+import React from 'react'
 
-type ButtonBase = { text: string; onClick: any };
-
-function Button({ text, onClick }: ButtonBase) {
-  return <button onClick={onClick}>{text}</button>;
+type ButtonBase = {
+  text: string
+  onClick: React.MouseEventHandler<HTMLButtonElement>
 }
 
-export default Button;
+function Button({ text, onClick }: ButtonBase) {
+  return <button onClick={onClick}>{text}</button>
+}
+
+export default Button
