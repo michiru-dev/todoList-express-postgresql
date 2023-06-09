@@ -33,11 +33,18 @@ export type todoListBase = { item: string; id: string; createdAt: Date }
 function App() {
   const [todoInput, setTodoInput] = useState('')
   const [todoList, setTodoList] = useState<todoListBase[]>([])
+  const [editId, setEditId] = useState('')
+  const [updatedItem, setUpdatedItem] = useState('')
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTodoInput(e.target.value)
   }
 
+  const handleUpdatedItem = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUpdatedItem(e.target.value)
+  }
+
+  //初回
   useEffect(() => {
     const fetchList = async () => {
       await axios
@@ -50,6 +57,7 @@ function App() {
     fetchList()
   }, [])
 
+  //追加
   const handleButtonClick = async (todoInput: string) => {
     //asyncで非同期処理を宣言
     //このheadersはリクエストボディの言語、長さ、コンテンツ形式等を指定するもの
@@ -64,14 +72,31 @@ function App() {
     //objectならaxiosが勝手にcontent-typeをapplication/jsonにしてくれるから上のconfigは今回はいらない
     const obj = { item: todoInput, id: uuidv4(), createdAt: new Date() }
     const res = await axios.post('/todos', { todoInput: obj })
-    console.log(res.data)
     setTodoList(res.data)
     setTodoInput('')
   }
 
+  //削除
   const handleDeleteButtonClick = async (id: string) => {
     const res = await axios.delete('/todos/delete', { data: { id: id } }) //この時の第二引数のプロパティ名は必ずdata
     //プロパティ名の後はオブジェクトで渡す。これの場合{id}だけでもうまくいく。多分勝手にidをプロパティ名にして処理してくれてる
+    setTodoList(res.data)
+  }
+
+  //編集
+  const handleEditButtonClick = async (id: string) => {
+    setEditId(id)
+    todoList.forEach((item) => {
+      if (item.id === id) {
+        setUpdatedItem(item.item)
+      }
+    })
+  }
+
+  //保存
+  const handleSaveButtonClick = async (id: string, newItem: string) => {
+    setEditId('')
+    const res = await axios.put('/todos/edit', { id, newItem })
     setTodoList(res.data)
   }
 
@@ -87,6 +112,11 @@ function App() {
       <ShowList
         list={todoList}
         handleDeleteButtonClick={handleDeleteButtonClick}
+        handleEditButtonClick={handleEditButtonClick}
+        handleUpdatedItem={handleUpdatedItem}
+        handleSaveButtonClick={handleSaveButtonClick}
+        editId={editId}
+        updatedItem={updatedItem}
       />
     </div>
   )

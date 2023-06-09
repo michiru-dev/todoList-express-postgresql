@@ -54,4 +54,15 @@ app.delete('/todos/delete', (req, res) => {
   res.status(202).send(todoList)
 })
 
+//編集
+app.put('/todos/edit', (req, res) => {
+  const { id, newItem } = req.body
+  todoList.forEach((item: todoListBase) => {
+    if (id === item.id) {
+      item.item = newItem
+    }
+  })
+  res.status(200).send(todoList) //foreachの中にres.sendを入れると複数回行われる可能性があるためエラーになる
+})
+
 app.listen(port, () => console.log('server running'))
