@@ -50,7 +50,7 @@ async function getData() {
     const client = await pool.connect() // データベース接続
     //クエリとはデータベースに対して特定の操作を行うための命令や要求を送信すること
     const query = 'SELECT * FROM todo ORDER BY created_at' //クエリ（命令）を指定
-    const result = await client.query(query) //これで上のクエリ（命令）を実行
+    const result = await client.query<any, string[]>(query) //これで上のクエリ（命令）を実行
     const data = result.rows // 取得したデータを処理 データは result.rows に格納されてる
     client.release() // データベース接続を解放
     return { data, isSuccess: true } //下でエラーハンドリングするためにisSuccessを追加
@@ -76,11 +76,11 @@ app.post('/todos', async (req: express.Request<any, any, TodoInput>, res) => {
     const { todoInput } = req.body //bodyの中にデータが入ってる
     const { item, id, created_at } = todoInput
     //~~~postgreSQL~~~
-    await pool.query('INSERT INTO todo(id,item,created_at) VALUES($1,$2,$3)', [
-      id,
-      item,
-      created_at,
-    ]) //変動する値を入れる場合はプレースホルダーを使いインジェクション対策をする
+    await pool.query<any, (string | Date)[]>( //本当はここまでの型定義はいらない
+      //この型定義はdb.tsのPoolから飛んで確認したやつ
+      'INSERT INTO todo(id,item,created_at) VALUES($1,$2,$3)',
+      [id, item, created_at]
+    ) //変動する値を入れる場合はプレースホルダーを使いインジェクション対策をする
     const todoList = await getData()
     if (!todoList.isSuccess) {
       throw new Error('データ取得エラー') //これをするとcatchにはいる
@@ -97,7 +97,7 @@ async function deleteItem(id: string) {
   try {
     const client = await pool.connect() // データベース接続
     const query = 'DELETE FROM todo WHERE id = $1' // 削除クエリを指定
-    const result = await client.query(query, [id]) // クエリの実行とパラメータのバインド
+    const result = await client.query<any, string[]>(query, [id]) // クエリの実行とパラメータのバインド
     client.release() // データベース接続を解放
     return result.rowCount > 0 // 削除が成功したかどうかを真偽値で返す(削除された行が1以上ならtrue)
   } catch (error) {
@@ -130,7 +130,10 @@ app.put(
   async (req: express.Request<any, any, EditInput>, res) => {
     try {
       const { id, newItem } = req.body
-      await pool.query('UPDATE todo SET item=$1 WHERE id=$2', [newItem, id])
+      await pool.query<any, string[]>('UPDATE todo SET item=$1 WHERE id=$2', [
+        newItem,
+        id,
+      ])
       const todoList = await getData()
       if (!todoList.isSuccess) {
         throw new Error('データ取得エラー')
