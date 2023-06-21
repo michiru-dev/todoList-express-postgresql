@@ -1,5 +1,5 @@
 # Todo List App　☑️
-just a practice of using nodejs express
+just a practice of using nodejs express and postgreSQL
 
 #### フロントエンド
 - React.js 18.2
@@ -10,4 +10,5 @@ just a practice of using nodejs express
 - Node.js 15.11
 - Typescript 5.1.3
 - Express.js　4.18.2
+- postgreSQL 15
 
