@@ -71,11 +71,9 @@ app.post('/todos', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const { todoInput } = req.body; //bodyの中にデータが入ってる
         const { item, id, created_at } = todoInput;
         //~~~postgreSQL~~~
-        yield db_1.pool.query('INSERT INTO todo(id,item,created_at) VALUES($1,$2,$3)', [
-            id,
-            item,
-            created_at,
-        ]); //変動する値を入れる場合はプレースホルダーを使いインジェクション対策をする
+        yield db_1.pool.query(//本当はここまでの型定義はいらない
+        //この型定義はdb.tsのPoolから飛んで確認したやつ
+        'INSERT INTO todo(id,item,created_at) VALUES($1,$2,$3)', [id, item, created_at]); //変動する値を入れる場合はプレースホルダーを使いインジェクション対策をする
         const todoList = yield getData();
         if (!todoList.isSuccess) {
             throw new Error('データ取得エラー'); //これをするとcatchにはいる
@@ -122,7 +120,10 @@ app.delete('/todos/delete', (req, res) => __awaiter(void 0, void 0, void 0, func
 app.put('/todos/edit', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id, newItem } = req.body;
-        yield db_1.pool.query('UPDATE todo SET item=$1 WHERE id=$2', [newItem, id]);
+        yield db_1.pool.query('UPDATE todo SET item=$1 WHERE id=$2', [
+            newItem,
+            id,
+        ]);
         const todoList = yield getData();
         if (!todoList.isSuccess) {
             throw new Error('データ取得エラー');
