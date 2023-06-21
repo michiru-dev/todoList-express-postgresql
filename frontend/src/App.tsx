@@ -28,7 +28,7 @@ import { v4 as uuidv4 } from 'uuid'
 //   return <button onClick={handleClick}>{text}</button>;
 // };
 
-export type todoListBase = { item: string; id: string; createdAt: Date }
+export type todoListBase = { item: string; id: string; created_at: Date }
 
 function App() {
   const [todoInput, setTodoInput] = useState('')
@@ -70,9 +70,9 @@ function App() {
     //   },
     // }
     //objectならaxiosが勝手にcontent-typeをapplication/jsonにしてくれるから上のconfigは今回はいらない
-    const obj = { item: todoInput, id: uuidv4(), createdAt: new Date() }
+    const obj = { item: todoInput, id: uuidv4(), created_at: new Date() }
     const res = await axios.post('/todos', { todoInput: obj })
-    setTodoList(res.data)
+    setTodoList(res.data.data) //res.dataまでは既存のやつ。その後のdataは私がオブジェクトで作ったやつ
     setTodoInput('')
   }
 
@@ -80,7 +80,7 @@ function App() {
   const handleDeleteButtonClick = async (id: string) => {
     const res = await axios.delete('/todos/delete', { data: { id: id } }) //この時の第二引数のプロパティ名は必ずdata
     //プロパティ名の後はオブジェクトで渡す。これの場合{id}だけでもうまくいく。多分勝手にidをプロパティ名にして処理してくれてる
-    setTodoList(res.data)
+    setTodoList(res.data.data)
   }
 
   //編集
@@ -97,7 +97,7 @@ function App() {
   const handleSaveButtonClick = async (id: string, newItem: string) => {
     setEditId('')
     const res = await axios.put('/todos/edit', { id, newItem })
-    setTodoList(res.data)
+    setTodoList(res.data.data)
   }
 
   return (
