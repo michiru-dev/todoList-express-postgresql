@@ -48,6 +48,8 @@ app.use(express.json())
 async function getData() {
   try {
     const client = await pool.connect() // データベース接続
+    //本当はconnectは不要、connectが必要なのは複数のクエリをグループ化して成功・失敗を管理した方がいい場合のみ
+    //今回のtodolistではどこにもconnectは必要ない。シンプルなクエリには不要
     //クエリとはデータベースに対して特定の操作を行うための命令や要求を送信すること
     const query = 'SELECT * FROM todo ORDER BY created_at' //クエリ（命令）を指定
     const result = await client.query<any, string[]>(query) //これで上のクエリ（命令）を実行
